@@ -9,17 +9,12 @@ Here is a description of this template p5 project.
 //
 // Description of setup() goes here.
 
-
+let angle = 0;
 
 let bg = {
   r: 255,
   b: 255,
   g: 255,
-}
-let bg2 = {
-  r: 0,
-  b: 0,
-  g: 0,
 }
 
 let circle1 = {
@@ -47,6 +42,7 @@ let circle2 = {
 
 function setup() {
   createCanvas(500, 500);
+  angleMode(DEGREES);
 
 
 }
@@ -60,7 +56,11 @@ background(bg.r, bg.b, bg.g);
  //ellipse (circle1.x, circle1.y, circle1.size)
 
 Bg ();
+
+Spinrect();
+
 Bubble1();
+
 Bubble2();
 
 }
@@ -110,6 +110,20 @@ if ((circle2.x <= 250) || (circle2.x >= 500)){
 
 function Bg (){
   if (circle1.x >= 100){
-   background(0);
+   background(100, 30, 27, 70);
  }
+}
+
+function Spinrect () {
+
+push();
+rectMode(CENTER);
+noStroke();
+translate(width / 2, height / 2);
+rotate(angle * -3);
+fill(190, 0, 180, 70);
+rect(0, 0, 50, 100);
+pop();
+
+angle = angle + 1
 }
