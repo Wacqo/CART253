@@ -11,6 +11,13 @@ Here is a description of this template p5 project.
 
 let rectLocation;
 
+let txt =  'GAME OVER';
+
+let txtinfo = {
+  width:500,
+  height:250,
+}
+
 let covid = {
   x: 0,
   y: 250,
@@ -38,7 +45,7 @@ let dot = {
   rd: 255,
   bl: 255,
   gr: 255,
-  oppa: 50,
+  oppa: 30,
   amount: 1000,
 }
 
@@ -49,6 +56,12 @@ width: 500,
 let img2 = {
   height:50,
   width: 100,
+}
+
+let cur = {
+x: 0,
+y: 0,
+
 }
 
 function preload() {
@@ -67,26 +80,18 @@ function setup() {
 // Description of draw() goes here.
 function draw() {
   background(0);
-  Corona();
   User();
   Chase();
   Static();
   Collision2();
+//  Clicked();
+}
+
+function mouseclicked (){
+reset();
 }
 
 
-function Corona  (){
-//fill(covid.rd, covid.bl, covid.gr, 90);
-image(img, covid.x, covid.y);
-
-if (covid.x >= 1000) {
-covid.x = 0,
-covid.y = random(height);
-}
-
-covid.x = covid.x + covid.speed;
-
-}
 function User () {
 
  player.x = mouseX;
@@ -104,10 +109,32 @@ for (let i = 0; i < dot.amount; i++) {
   dot.x = random(0,1000);
   dot.y = random(0, 500);
   push();
-  stroke(255, 30);
+  stroke(dot.rd, dot.bl, dot.gr, dot.oppa);
   noFill();
   ellipse(dot.x, dot.y, dot.size);
   pop();
+  let d = dist(player.x, player.y, rectLocation.x, rectLocation.y);
+if (d < (img.width && img.height) + player.size) {
+  dot.bl = 0;
+  dot.gr = 0;
+  dot.oppa = 90;
+  dot.size = 40;
+}
+    else if (d < (img.width*2 && img.height*2) + player.size*2) {
+
+      dot.bl = 0;
+      dot.gr = 0;
+      dot.oppa = 75;
+      dot.size = 25;
+
+    }
+else {
+  dot.bl = 255;
+  dot.gr = 255;
+  dot.oppa = 30;
+  dot.size = 10;
+}
+
 }
 }
 
@@ -124,7 +151,6 @@ function Chase() {
   target.mult(mappedDistance);
   rectLocation.add(target)
 
- //ellipse(rectLocation.x, rectLocation.y, covid.size);
  imageMode(CENTER);
   image(img, rectLocation.x, rectLocation.y, img.width, img.height);
 
@@ -134,5 +160,14 @@ function Collision2 () {
 let d = dist(player.x, player.y, rectLocation.x, rectLocation.y);
 if (d < (img.width/3 && img.height/3) + player.size/2) {
 noLoop();
-}
-}
+push();
+background(0);
+rectMode(CENTER);
+textAlign(CENTER);
+fill(255);
+textSize(42);
+text(txt, width/2, height/2, txtinfo.width, txtinfo.height);
+cursor(CROSS);
+pop();
+    }
+  }
