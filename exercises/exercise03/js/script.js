@@ -1,209 +1,265 @@
 /**************************************************
-Exercise number 2
+Exercise number 3
 Nico Brinton
 
-this is my modifications and my take on the dogin covid exercise, i changed the characters around and
-added effects when you get to close to the "enemy"
+this is the modifications to the A5. in this i added a different ending and add different ways
+to end the gamee
 **************************************************/
-
-
-// this variable allows you to use physics and will help allow
-// the shark to follow you
+// the following 2 variables are for both circles
+// is used to help allow them to follow there targeets
 let rectLocation;
+let rectLocation2;
 
-// this is the variable that allows for the "game over text to be displayed"
-let txt =  'GAME OVER';
-
-//this is the variable for the valuse of the text obj
-let txtinfo = {
-  width:500,
-  height:250,
+// this is the variable for the easterEgg object, which is a square
+let endPoint = {
+  x: 1,
+  y: 499,
+  size: 30,
 }
 
-//this is the variable for the information of the "covid", but in my case is a shark
-let covid = {
-  x: 0,
-  y: 250,
-  size: 50,
-  speed: 2,
-  speedneg: -1,
-  rd: 200,
-  bl: 0,
-  gr: 0,
+// this holds all the componentts to the bigger circle
+let circle1 = {
+x: 0,
+y: 250,
+size:75,
+vx:0,
+vy:0,
+speed:3,
 }
 
-//this is the variable that has all the information for the users input
-// which in this case is a fish trying to run away from the shark
-let player = {
-  x: 0,
-  y: 0,
-  size: 50,
-  rd: 255,
-  bl: 255,
-  gr: 255,
+// this is the variable that holds all the information to smaller circle
+let circle2 = {
+x: 0,
+y: 250,
+size:50,
+vx:0,
+vy:0,
+speed:3,
 }
 
-//this is the variable for the background affect, that gives the strobe effect
-let dot = {
-  x: 0,
-  y: 0,
-  size: 10,
-  rd: 255,
-  bl: 255,
-  gr: 255,
-  oppa: 30,
-  amount: 1000,
+// this is the variable for the background colours
+let bg = {
+r: 0,
+b: 0,
+g: 0,
 }
 
-//this is the variable for the picture of the shark, which is "covid"
-let img = {
-height: 318,
-width: 500,
-};
-//this is the variable for the picture of the fish, which is the user
-let img2 = {
-  height:50,
-  width: 100,
-}
 
-// This is the function that loads in the pictures, before the simulation actually starts to run
-function preload() {
-  img = loadImage ('assets/images/shark03.png');
-  img2 = loadImage ('assets/images/dory.png');
 
-}
+// this is the variable that allows me to change the state,
+let state = 'title';
 
-// this is where the canvas gets created
-// this is also where the vector gets defind
+//these are the variable that hold what is being written
+let txt = "LOVE";
+let txt2 = ":(";
+let txt3 = "What Is Love?";
+let txt4 = 'Congradualtions you escaped \n from a life of being trapped'
+
+// what happens in set up that the circles are getting placed in there
+//starting positions
 function setup() {
-  createCanvas(1000, 500);
-  rectLocation = createVector(width/2, height/2);
+  createCanvas(500, 500);
+  setUpCircles();
 }
 
-
-// this is where we draw all of the functions that we created
+// in draw, all the functions that either display and move the circlesCollide
+// or the title screen, love screen, the sad screen and the eastere egg scenee
 function draw() {
-  background(0);
-// the player
-  User();
-  //this is the shark, "enemy"
-  Chase();
-  // this is the bg, that has all the mini circles
-  Static();
 
-  //this is what allows all the system to know when the player hits the enemy
-  // and what allows the game over screen to pop up
-  Collision2();
+
+
+// this is what tells teh computer what the current state is
+if (state === 'title') {
+title();
+}
+else if (state === 'simulation'){
+simulation();
+}
+else if (state === 'love') {
+love();
+}
+else if (state === 'sadness'){
+  sadness();
+}
+else if (state === 'easterEgg'){
+  easterEgg();
+}
 
 }
 
-// this is the function fo rthe player, in this case this is all the
-// information for the person who controls the fish
-function User () {
-
-// this tell the system we are using the mouse position to track the fishes location
- player.x = mouseX;
- player.y = mouseY;
-
-// this is where we define the player itself
-// so there is no cursor, no stroke and sets the image to the fish
-  noCursor();
-  noStroke();
-  image(img2, player.x, player.y, img2.width, img2.height);
+//this is the function that has all the other functions involved,
+// it calls all the functions for the collision, out of bounds, and the movement
+function simulation () {
+bg2();
+eggPoint();
+lostLove();
+circlesCollide();
+circle1Follow();
+circle2Follow();
 }
 
-// this is the function for the static in the bg
-function Static (){
+// this is just the background for when the balls are moving and you are ein play
+function bg2() {
+background(bg.r, bg.b, bg.g);
+}
 
-// this is the loop that creates all the circles you see in the bg
-for (let i = 0; i < dot.amount; i++) {
-  //this is what allows the system to give the circles random locations
-  dot.x = random(0,1000);
-  dot.y = random(0, 500);
+// thsi is the set up function, this is what places the circles in there initial position
+// and creates the variablee for movement of the circle
+function setUpCircles() {
+circle1.x = width/3;
+circle1.y = 250;
 
-  // this is what gives the circles there properties
-  // gives the initial colour white, with no fill, and an oppacity of 30
+circle2.x = 2 * width/3;
+circle2.y = 250;
+
+rectLocation = createVector(0, 0);
+rectLocation2 = createVector(width/2, height/2);
+}
+
+// this is the function that allows for the collision to happen,
+// and when the collision happens to change the screen
+function circlesCollide () {
+let d = dist (rectLocation.x, rectLocation.y, rectLocation2.x, rectLocation2.y);
+if (d < circle1.size/2 + circle2.size/2) {
+  state = 'love'
+  setUpCircles();
+}
+
+// this is the collison for the smaller circle and the easter egg point
+let d2 = dist (rectLocation.x, rectLocation.y, endPoint.x, endPoint.y);
+if (d2 < circle2.size/2 + endPoint.size/2) {
+  state = 'easterEgg'
+  setUpCircles();
+}
+
+}
+
+// this function allows you to switch between the screens, so if they touch you can just
+// click the screeen and it will take you back to the title screen and the same for the sad screens
+// and allows you to go from the title screen to the simulation screen
+function mousePressed () {
+if (state === 'title'){
+  state = 'simulation';
+}
+else if (state === 'sadness'){
+ state = 'title';
+}
+else if (state === 'love'){
+  state = 'title';
+}
+else if (state === 'easterEgg'){
+  state = 'title';
+}
+}
+
+// this function allows the program when your clock reachees 10 seeconds
+// allows you to get a random eending each time you play
+// and when hit the 10 second it will display a the sad screen
+function lostLove() {
+  let s = second();
+if (s === 10) {
+state = 'sadness';
+setUpCircles();
+
+}
+}
+
+// this is function that hold all the information for the sad screens
+// the text, size, and the position
+function sadness () {
+  background(20, 60, 90);
   push();
-  stroke(dot.rd, dot.bl, dot.gr, dot.oppa);
-  noFill();
-  ellipse(dot.x, dot.y, dot.size);
+  textSize(62);
+  textAlign(CENTER, CENTER);
+  text (txt2, width/2, height/2);
   pop();
-
-  // this is created to give the distance which allows the system to know how
-  // far apart the player and shark are away from each other.
-  let d = dist(player.x, player.y, rectLocation.x, rectLocation.y);
-if (d < (img.width && img.height) + player.size) {
-  // each time it gets closer the colour and size both changes
-  // no it becomes the biggest it gets and red
-  dot.bl = 0;
-  dot.gr = 0;
-  dot.oppa = 90;
-  dot.size = 40;
-}
-    else if (d < (img.width*2 && img.height*2) + player.size*2) {
-      // here its a litttle bit further away so its still red, but more transparent
-      dot.bl = 0;
-      dot.gr = 0;
-      dot.oppa = 75;
-      dot.size = 25;
-
-    }
-else {
-  dot.bl = 255;
-  dot.gr = 255;
-  dot.oppa = 30;
-  dot.size = 10;
 }
 
-}
+// this is function that hold all the information for the love screens
+// the text, size, and the position
+function love (){
+  background(20, 60, 90);
+  push();
+  textSize(62);
+  textAlign(CENTER,CENTER);
+  text (txt, width/2, height/2);
+  pop();
 }
 
+// this is function that hold all the information for the title screens
+// the text, size, and the position
+function title() {
+  background(200, 162, 200);
+  push();
+  textSize(62);
+  textAlign(CENTER, CENTER);
+  text (txt3, width/2, height/2);
+  pop();
+}
 
-// this is the variable for the enemy, in this case the shark
-function Chase() {
-// the next coupe of lines of code all define the physics involved in order
-// to allow the "shark" to follow the fish
-  let target = createVector(mouseX, mouseY);
+// this is the function that allows the circle to follow my cursor
+// to give the simulation a different feel
+function circle2Follow() {
+
+// i added a constrain on the circle so it wont escape ethe ccanvas
+  let xc = constrain(mouseX, 0, width);
+  let yc = constrain(mouseY, 0, width);
+
+//this is what createes thee target for the circle, which is my mouse
+  let target = createVector(xc, yc);
 
   let distance = target.dist(rectLocation);
 
-  let mappedDistance = map(distance, 100, 0, 1.5, 0.5);
+  let mappedDistance = map(distance, 100, 0, 2, 1);
 
   target.sub(rectLocation);
   target.normalize();
   target.mult(mappedDistance);
   rectLocation.add(target)
 
-// this is what allows the picture to be displayed as a "shark"
- imageMode(CENTER);
-  image(img, rectLocation.x, rectLocation.y, img.width, img.height);
+// this is what draws the circle
+fill(255);
+ellipse(rectLocation.x, rectLocation.y, circle2.size);
 
 }
-// this is the code that allows the background to be displayed and what allows the "game over"
-// screen to be displayed
-function Collision2 () {
-// this is what is used to tell the system when the shark colides with the fishes
-// that the "game overe screen will be displayed"
-let d = dist(player.x, player.y, rectLocation.x, rectLocation.y);
-if (d < (img.width/3 && img.height/3) + player.size/2) {
 
-// this is all the code that allows the "game over text to be displayed"
-noLoop();
-push();
-//when collides sets bg to black
-background(0);
-//this centers the square in the canvas
-rectMode(CENTER);
-// this centers the text in the square
-textAlign(CENTER);
-//colour of text, white
+// this is the function that allows the circle to follow my cursor
+// to give the simulation a different feel
+function circle1Follow() {
+
+// this is what gives the secound circle the target to track,
+// which is the position of the other circle
+  let target = createVector(rectLocation.x, rectLocation.y);
+
+  let distance = target.dist(rectLocation);
+
+  let mappedDistance = map(distance, 100, 0, 2.5, 1.5);
+
+  target.sub(rectLocation2);
+  target.normalize();
+  target.mult(mappedDistance);
+  rectLocation2.add(target)
+
+// this is what draws the circle
 fill(255);
-//font size 42
-textSize(42);
-// the text "game over"
-text(txt, width/2, height/2, txtinfo.width, txtinfo.height);
-// this changes cursor into a cross
-cursor(CROSS);
-pop();
-    }
-  }
+ellipse(rectLocation2.x, rectLocation2.y, circle1.size);
+
+}
+
+// this is function that hold all the information for the easterEgg screens
+// the text, size, and the position
+function easterEgg() {
+      background(20, 150, 30);
+      push();
+      textSize(35);
+      textAlign(CENTER, CENTER);
+      text (txt4, width/2, height/2);
+      pop();
+}
+
+//this is the function that draws and creates th easteregg
+function eggPoint (){
+//stroke(255);
+fill(0);
+ellipse(endPoint.x, endPoint.y, endPoint.size);
+}
